@@ -1,0 +1,45 @@
+# Python virtual environment
+.venv/
+__pycache__/
+*.py[cod]
+
+# Tool caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Secrets and local config
+.env
+settings.ini
+
+# Snapshot database
+data/
+
+# Logs
+*.log
+
+# Machine-specific coding-rules state
+coding-rules.json
+
+# graphify build output
+graphify-out/
+src/graphify-out/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+
+# Claude Code local settings
+.claude/
+claude-plans/
+PLAN_*.md
