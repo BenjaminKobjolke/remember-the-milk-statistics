@@ -21,8 +21,13 @@ if %ERRORLEVEL% neq 0 (
 
 echo.
 echo [2/2] Running tests...
-uv run pytest tests/ -q
-if %ERRORLEVEL% neq 0 (
+if defined TICKETS_WATCHER_COMMAND_RUN (
+    uv run pytest tests/ -v
+) else (
+    uv run pytest tests/ -q
+)
+set TESTRESULT=%ERRORLEVEL%
+if %TESTRESULT% neq 0 (
     echo WARNING: Some tests failed
 )
 
@@ -31,3 +36,4 @@ echo ========================================
 echo  Setup complete!
 echo ========================================
 echo.
+exit /b %TESTRESULT%

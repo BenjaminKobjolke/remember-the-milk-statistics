@@ -30,19 +30,27 @@ if %ERRORLEVEL% neq 0 (
 echo.
 echo [3/4] Running linting checks...
 uv run ruff check src/ tests/
-if %ERRORLEVEL% neq 0 (
+set QUALITYRESULT=%ERRORLEVEL%
+if %QUALITYRESULT% neq 0 (
     echo WARNING: Linting issues found
 )
 
 uv run mypy src/
-if %ERRORLEVEL% neq 0 (
+set MYRESULT=%ERRORLEVEL%
+if %MYRESULT% neq 0 set QUALITYRESULT=1
+if %MYRESULT% neq 0 (
     echo WARNING: Type checking issues found
 )
 
 echo.
 echo [4/4] Running tests...
-uv run pytest tests/ -q
-if %ERRORLEVEL% neq 0 (
+if defined TICKETS_WATCHER_COMMAND_RUN (
+    uv run pytest tests/ -v
+) else (
+    uv run pytest tests/ -q
+)
+set TESTRESULT=%ERRORLEVEL%
+if %TESTRESULT% neq 0 (
     echo WARNING: Some tests failed after update
     echo You may need to fix compatibility issues
 )
@@ -55,3 +63,6 @@ echo.
 echo Updated packages are now in uv.lock
 echo Remember to commit uv.lock if everything works correctly
 echo.
+if %TESTRESULT% neq 0 exit /b %TESTRESULT%
+if %QUALITYRESULT% neq 0 exit /b %QUALITYRESULT%
+exit /b 0

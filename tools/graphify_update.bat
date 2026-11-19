@@ -35,7 +35,7 @@ set "GRAPHIFY=graphify"
 where graphify >nul 2>nul
 if errorlevel 1 (
   if exist "graphify-out\.graphify_python" (
-    set /p GPY=<graphify-out\.graphify_python
+    for /f "usebackq delims=" %%A in ("graphify-out\.graphify_python") do set "GPY=%%A"
     set "GRAPHIFY=!GPY:python.exe=graphify.exe!"
   ) else (
     echo ERROR: graphify not on PATH and no graphify-out\.graphify_python found.
@@ -47,6 +47,7 @@ if errorlevel 1 (
 echo === [1/2] live-graph AST refresh (no LLM) : %CODE_DIR% ===
 set "GRAPHIFY_OUT=%CD%\graphify-out"
 "%GRAPHIFY%" update "%CD%\%CODE_DIR%"
+if errorlevel 1 goto :graphify_failed
 echo.
 
 echo === [2/2] smoke test: live root graph ===
@@ -57,16 +58,25 @@ if not exist "graphify-out\graph.json" (
 )
 REM Report directed flag + node count of the LIVE root graph (should be directed:True).
 if exist "graphify-out\.graphify_python" (
-  set /p GPY2=<graphify-out\.graphify_python
+  for /f "usebackq delims=" %%A in ("graphify-out\.graphify_python") do set "GPY2=%%A"
   "!GPY2!" -c "import json;d=json.load(open('graphify-out/graph.json',encoding='utf-8'));print('directed:',d.get('directed'),'  nodes:',len(d.get('nodes',[])))"
+  if errorlevel 1 goto :graphify_failed
 )
 echo.
 echo --- god nodes (top 5) ---
 "%GRAPHIFY%" god-nodes --top 5
+if errorlevel 1 goto :graphify_failed
 echo.
 echo --- sample query ---
 REM --context call: follow call edges; a question mentioning "modules" otherwise gets import context and may show only one node.
 "%GRAPHIFY%" query "What are the main modules and how do they connect?" --context call
+if errorlevel 1 goto :graphify_failed
 
 popd
 endlocal
+exit /b 0
+
+:graphify_failed
+set "RESULT=%ERRORLEVEL%"
+popd
+endlocal & exit /b %RESULT%
