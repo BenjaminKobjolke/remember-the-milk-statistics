@@ -37,3 +37,20 @@ they are intentionally referenced, not imported.
   completed today) into SQLite. Reference project: `../remember-the-milk-exporter`.
 - graphify: this project's code directory is `src/` (scan root for `/graphify src --directed`
   and `tools/graphify_update.bat`).
+
+## Code Analysis
+
+Run the changed-files analyzer after a feature, completed plan or bug fix:
+
+```bash
+powershell -Command "cd 'D:\GIT\BenjaminKobjolke\remember-the-milk-statistics'; cmd /c '.\tools\analyze_changed_and_new_files.bat'"
+```
+
+It uses `--only-changed` and reports new or modified files relative to Git `HEAD`, including
+untracked files and excluding deletions. Project-wide analyzers may still run, but their findings
+are filtered to those changed files.
+
+Use `tools/analyze_code.bat` for a full project audit, before a release or merge, after a shared
+code refactor, or when the working tree is clean. Results are per-rule CSV files in
+`code_analysis_results/`; a missing CSV means that rule found no findings. Fix reported issues
+that apply to the work and rerun the analyzer.
