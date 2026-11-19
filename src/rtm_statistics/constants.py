@@ -18,6 +18,12 @@ KEY_DATABASE = "database"
 KEY_LOG_LEVEL = "level"
 
 DEFAULT_DATABASE = "data/statistics.sqlite"
+SNAPSHOTS_TABLE = "snapshots"
+
+# Shared schema contract, mounted as git submodule; never read by production code
+CONTRACT_DIR = "contract"
+CONTRACT_SCHEMA_FILE = "schema.json"
+CONTRACT_COLUMNS_KEY = "columns"
 DEFAULT_LOG_LEVEL = "INFO"
 
 STATUS_INCOMPLETE = "status:incomplete"

@@ -57,6 +57,19 @@ CREATE TABLE snapshots (
 );
 ```
 
+### Schema contract
+
+The table is shared with
+[remember-the-milk-statistics-frontend](../remember-the-milk-statistics-frontend) through the
+[remember-the-milk-statistics-contract](https://github.com/BenjaminKobjolke/remember-the-milk-statistics-contract)
+submodule at `contract/`. Clone with `--recurse-submodules`, or run
+`git submodule update --init contract`.
+
+- `tests/unit/test_contract.py` fails when the table no longer matches `contract/schema.json`.
+- After a deliberate schema change, run `tools\export_contract.bat`, then commit and push the
+  contract repo first. Follow the change order in the contract README: a dropped or renamed
+  column breaks the frontend.
+
 ## Development
 
 | Script | Purpose |
@@ -65,5 +78,6 @@ CREATE TABLE snapshots (
 | `tools\run_integration_tests.bat` | integration tests (`tests/integration`, no live API) |
 | `update.bat` | upgrade dependencies, lint, type check, test |
 | `tools\graphify_update.bat` | refresh the graphify code graph of `src/` |
+| `tools\export_contract.bat` | write the table definition into `contract/schema.json` |
 
 Checks: `uv run ruff check src tests`, `uv run ruff format --check src tests`, `uv run mypy src`.

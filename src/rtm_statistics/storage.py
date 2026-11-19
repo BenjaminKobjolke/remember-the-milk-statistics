@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS snapshots (
 """
 _INSERT = "INSERT INTO snapshots (taken_at, list_name, open_count, completed_count) VALUES (?, ?, ?, ?)"
 _SELECT_ALL = "SELECT taken_at, list_name, open_count, completed_count FROM snapshots ORDER BY id"
+_TABLE_INFO = "PRAGMA table_info(snapshots)"
 
 
 @dataclass(frozen=True)
@@ -25,6 +26,12 @@ class Snapshot:
     list_name: str
     open_count: int
     completed_count: int
+
+
+@dataclass(frozen=True)
+class SnapshotColumn:
+    name: str
+    type: str
 
 
 class SnapshotStore:
@@ -48,3 +55,9 @@ class SnapshotStore:
         with closing(self._connect()) as connection:
             rows = connection.execute(_SELECT_ALL).fetchall()
         return [Snapshot(datetime.fromisoformat(row[0]), row[1], row[2], row[3]) for row in rows]
+
+    def columns(self) -> list[SnapshotColumn]:
+        with closing(self._connect()) as connection:
+            rows = connection.execute(_TABLE_INFO).fetchall()
+        # PRAGMA table_info row: (cid, name, type, notnull, dflt_value, pk)
+        return [SnapshotColumn(row[1], row[2]) for row in rows]
